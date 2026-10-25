@@ -1,6 +1,6 @@
 # Asset-liability matching for an annuity block
 
-Toy study: synthetic liabilities, real bond data (WRDS snapshot, Nov 2025). A formulation exercise, not a model of any real insurer. Amounts are in USD millions unless noted.
+Synthetic liabilities, real bond data (WRDS snapshot, Nov 2025). A formulation exercise, not a model of any real insurer. Amounts are in USD millions unless noted.
 
 An insurer collects a lump-sum premium from 1,000 annuitants and owes each of them 10k a year while alive. We choose a bond portfolio to cover the payments and maximize income, first with a deterministic LP on expected payouts, then with a two-stage stochastic LP over longevity and rate scenarios.
 

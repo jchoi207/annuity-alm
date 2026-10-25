@@ -1,7 +1,7 @@
 [project]
-name = "alm-toy"
+name = "alm"
 version = "0.1.0"
-description = "Toy asset-liability matching for an annuity block: deterministic vs stochastic LP"
+description = "Asset-liability matching for an annuity block: deterministic vs stochastic LP"
 requires-python = ">=3.12"
 dependencies = [
     "numpy",

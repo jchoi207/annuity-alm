@@ -1,6 +1,6 @@
-# alm-toy
+# alm
 
-Toy asset-liability matching for an annuity block. A formulation exercise, not a model of any real insurer. Results and assumptions are in [report.md](report.md).
+Asset-liability matching for an annuity block. A formulation exercise, not a model of any real insurer. Results and assumptions are in [report.md](report.md).
 
 An insurer owes 1,000 annuitants 10k a year while alive. We pick a bond portfolio (Treasuries and investment-grade corporates) that covers the payments and maximizes net yield, subject to cash matching, duration, capital, rating and issuer limits.
 

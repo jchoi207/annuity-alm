@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-# Toy assumptions, not LICAT/RBC. Annual default probability and capital factor by rating bucket.
+# Made-up assumptions, not LICAT/RBC. Annual default probability and capital factor by rating bucket.
 DEFAULT_PROB = {"UST": 0.0, "AAA": 0.0001, "AA": 0.0003, "A": 0.0008, "BBB": 0.002}
 CAPITAL_FACTOR = {"UST": 0.0, "AAA": 0.005, "AA": 0.01, "A": 0.02, "BBB": 0.04}
 LGD = 0.40
