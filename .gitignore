@@ -1,0 +1,9 @@
+.venv/
+.env
+__pycache__/
+.ipynb_checkpoints/
+# WRDS data can't be redistributed. Pull it with alm.data.
+data/*
+!data/.gitkeep
+# Personal write-up, not committed.
+report/

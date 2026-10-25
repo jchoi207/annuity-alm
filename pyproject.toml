@@ -1,0 +1,22 @@
+[project]
+name = "alm-toy"
+version = "0.1.0"
+description = "Toy asset-liability matching for an annuity block: deterministic vs stochastic LP"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "cvxpy",
+    "matplotlib",
+    "wrds==3.5.0",
+    "ipykernel",
+    "python-dotenv>=1.2.4",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/alm"]
