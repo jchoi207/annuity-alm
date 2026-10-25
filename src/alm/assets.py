@@ -25,32 +25,40 @@ def synthetic_universe(
     return df.drop(columns="spread")
 
 
-def build_universe(bondret: pd.DataFrame, treasuries: pd.DataFrame, asof: str) -> pd.DataFrame:
+def build_universe(
+    bondret: pd.DataFrame, treasuries: pd.DataFrame, asof: str
+) -> pd.DataFrame:
     """Treasuries plus IG corporates in the same columns as synthetic_universe, plus issuer.
 
     Prices are dirty (clean plus accrued) per unit of par. Duration is treated as Macaulay and converted to modified.
     """
-    corp = pd.DataFrame({
-        "name": bondret.cusip,
-        "issuer": bondret.issuer.fillna(bondret.cusip.str[:6]),
-        "rating": pd.cut(bondret.rating_num, [0, 1, 4, 7, 10], labels=["AAA", "AA", "A", "BBB"]).astype(str),
-        "maturity": bondret.maturity,
-        "coupon": bondret.coupon / 100,
-        "price": (bondret.price_eom + bondret.coupacc.fillna(0)) / 100,
-        "ytm": bondret.ytm,
-        "mod_dur": bondret.duration / (1 + bondret.ytm / 2),
-    })
+    corp = pd.DataFrame(
+        {
+            "name": bondret.cusip,
+            "issuer": bondret.issuer.fillna(bondret.cusip.str[:6]),
+            "rating": pd.cut(
+                bondret.rating_num, [0, 1, 4, 7, 10], labels=["AAA", "AA", "A", "BBB"]
+            ).astype(str),
+            "maturity": bondret.maturity,
+            "coupon": bondret.coupon / 100,
+            "price": (bondret.price_eom + bondret.coupacc.fillna(0)) / 100,
+            "ytm": bondret.ytm,
+            "mod_dur": bondret.duration / (1 + bondret.ytm / 2),
+        }
+    )
     years = (pd.to_datetime(treasuries.maturity) - pd.Timestamp(asof)).dt.days / 365.25
-    tsy = pd.DataFrame({
-        "name": treasuries.cusip,
-        "issuer": "UST",
-        "rating": "UST",
-        "maturity": years,
-        "coupon": treasuries.coupon / 100,
-        "price": (treasuries.price + treasuries.accrued.fillna(0)) / 100,
-        "ytm": treasuries.ytm,
-        "mod_dur": treasuries.duration / (1 + treasuries.ytm / 2),
-    })[years.between(1, 30)]
+    tsy = pd.DataFrame(
+        {
+            "name": treasuries.cusip,
+            "issuer": "UST",
+            "rating": "UST",
+            "maturity": years,
+            "coupon": treasuries.coupon / 100,
+            "price": (treasuries.price + treasuries.accrued.fillna(0)) / 100,
+            "ytm": treasuries.ytm,
+            "mod_dur": treasuries.duration / (1 + treasuries.ytm / 2),
+        }
+    )[years.between(1, 30)]
     return pd.concat([tsy, corp], ignore_index=True)
 
 

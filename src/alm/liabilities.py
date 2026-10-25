@@ -17,16 +17,24 @@ def survival_curve(qx: np.ndarray, age: int, horizon: int) -> np.ndarray:
     return np.cumprod(1 - q)
 
 
-def annuity_cashflows(qx: np.ndarray, ages: np.ndarray, payment: float, horizon: int) -> np.ndarray:
+def annuity_cashflows(
+    qx: np.ndarray, ages: np.ndarray, payment: float, horizon: int
+) -> np.ndarray:
     """Expected annual payout L_t (paid at the end of year t) summed over the block."""
     vals, counts = np.unique(ages, return_counts=True)
-    return payment * sum(n * survival_curve(qx, int(a), horizon) for a, n in zip(vals, counts))
+    return payment * sum(
+        n * survival_curve(qx, int(a), horizon) for a, n in zip(vals, counts)
+    )
 
 
-def scenario_cashflows(qx: np.ndarray, ages: np.ndarray, payment: float, horizon: int, shocks: np.ndarray) -> np.ndarray:
+def scenario_cashflows(
+    qx: np.ndarray, ages: np.ndarray, payment: float, horizon: int, shocks: np.ndarray
+) -> np.ndarray:
     """(len(shocks), horizon) payouts when mortality is scaled by each shock."""
     scaled = lambda f: np.append(np.minimum(qx[:-1] * f, 1.0), 1.0)
-    return np.array([annuity_cashflows(scaled(f), ages, payment, horizon) for f in shocks])
+    return np.array(
+        [annuity_cashflows(scaled(f), ages, payment, horizon) for f in shocks]
+    )
 
 
 def pv_duration(L: np.ndarray, rate: float) -> tuple[float, float]:

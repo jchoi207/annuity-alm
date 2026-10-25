@@ -3,7 +3,9 @@
 import numpy as np
 
 
-def rate_scenarios(r0: float, n: int, horizon: int, level_sd=0.01, slope_sd=0.01, seed: int = 0) -> np.ndarray:
+def rate_scenarios(
+    r0: float, n: int, horizon: int, level_sd=0.01, slope_sd=0.01, seed: int = 0
+) -> np.ndarray:
     """(n, horizon) reinvestment rates: r0 plus a parallel shift plus a tilt that builds over the horizon, floored at 0."""
     rng = np.random.default_rng(seed)
     level = rng.normal(0, level_sd, (n, 1))

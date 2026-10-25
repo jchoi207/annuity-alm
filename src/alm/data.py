@@ -40,7 +40,9 @@ def pull_treasuries(db: wrds.Connection, date: str) -> pd.DataFrame:
     """)
 
 
-def pull_bondret(db: wrds.Connection, month_end: str, min_outstanding: float = 300_000) -> pd.DataFrame:
+def pull_bondret(
+    db: wrds.Connection, month_end: str, min_outstanding: float = 300_000
+) -> pd.DataFrame:
     """One month of wrdsapps_bondret. Investment grade, semiannual fixed coupon, non-convertible, 1 to 30y.
 
     Units: coupon in percent, ytm in decimals, price_eom per 100 par, amount_outstanding in $000.
