@@ -1,4 +1,4 @@
-# alm
+# annuity-alm
 
 Asset-liability matching for an annuity block: a deterministic LP and a two-stage stochastic LP on synthetic liabilities and real WRDS bond data. A formulation exercise, not a model of any real insurer. `report.md` is the write-up.
 

@@ -1,5 +1,5 @@
 [project]
-name = "alm"
+name = "annuity-alm"
 version = "0.1.0"
 description = "Asset-liability matching for an annuity block: deterministic vs stochastic LP"
 requires-python = ">=3.12"

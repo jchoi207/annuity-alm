@@ -1,4 +1,4 @@
-# alm
+# annuity-alm
 
 Asset-liability matching for an annuity block. A formulation exercise, not a model of any real insurer. Results and assumptions are in [report.md](report.md).
 
