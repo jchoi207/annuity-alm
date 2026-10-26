@@ -1,6 +1,6 @@
 # Asset-liability matching for an annuity block
 
-Synthetic liabilities, real bond data (WRDS snapshot, Nov 2025). A formulation exercise, not a model of any real insurer. Amounts are in USD millions unless noted.
+Synthetic liabilities, real bond data (WRDS snapshot, Nov 2025). A formulation exercise, not a model of any real insurer. Amounts are in USD millions.
 
 An insurer collects a lump-sum premium from 1,000 annuitants and owes each of them 10k a year while alive. We choose a bond portfolio to cover the payments and maximize income, first with a deterministic LP on expected payouts, then with a two-stage stochastic LP over longevity and rate scenarios.
 
@@ -9,14 +9,14 @@ An insurer collects a lump-sum premium from 1,000 annuitants and owes each of th
 ### Liabilities (synthetic)
 
 - Ages uniform on 65 to 75, 10k a year each while alive, paid at year end, horizon $T = 40$.
-- Gompertz mortality, $q_x = 1 - \exp\!\big(-a\,e^{bx}(e^b - 1)/b\big)$ with $a = 3.46\times10^{-5}$, $b = 0.09$ (1.25% at 65, 7.3% at 85). No lapses.
-- Expected payout $L_t = 1000 \cdot P(\text{alive at } t) \cdot 10\text{k}$: 9.8 in year 1, 3.4 in year 20, 156.9 in total. Deaths are not simulated.
+- Gompertz mortality, $q_x = 1 - \exp\!\big(-a\,e^{bx}(e^b - 1)/b\big)$ with $a = 3.46\times10^{-5}$, $b = 0.09$ (1.25% at 65, 7.3% at 85). No lapses since premia are collected at time 0.
+- Expected payout $L_t = 1000 \cdot P(\text{alive at } t) \cdot 10\text{k}$: 9.8 in year 1, 3.4 in year 20, 156.9 in total. 
 - PV of payouts 108.1, discounted at 3.87% (Treasury yield at the liabilities' duration). Modified duration $D_L = 8.58$.
 - Assets $A = 1.02 \times \text{PV} = 110.3$. The 2% margin (about 2.2) is the cushion.
 
 ### Bonds (WRDS)
 
-- Corporates: wrdsapps_bondret, 2025-11-30. Treasuries: CRSP daily, 2025-11-28. Nov 2025 is the latest month with a full cross-section.
+- Corporates: `wrdsapps_bondret`, 2025-11-30. Treasuries: `CRSP` daily, 2025-11-28. Nov 2025 is the latest month with a full cross-section.
 - Filters: investment grade, semiannual fixed coupon, non-convertible, 1 to 30 years, not defaulted, at least 300m outstanding.
 - Universe: 7,282 bonds from 800 issuers (298 Treasuries, 3,652 BBB, 2,877 A, 391 AA, 64 AAA).
 - Conventions: dirty prices; annual cash flow buckets with maturity rounded to whole years; WRDS duration treated as Macaulay and converted to modified.
@@ -26,7 +26,7 @@ An insurer collects a lump-sum premium from 1,000 annuitants and owes each of th
 
 ### Credit assumptions (synthetic)
 
-Loss given default is 40%. Net yield is ytm minus default probability x LGD. Capital is limited by a cap, not charged for in the yield.
+Loss given default is 40%. Net yield is ytm minus default probability x LGD. Capital is limited by a cap according to synthetic risk weights.
 
 | rating | default prob. a year | capital factor $k$ | mean ytm | mean net yield |
 | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Loss given default is 40%. Net yield is ytm minus default probability x LGD. Cap
 Each scenario $\omega$ draws one longevity shock and one rate path, independently. Both are system-wide, the same for all annuitants. 200 scenarios are used inside the LP and 1,000 fresh ones to grade the result.
 
 - **Longevity.** One multiplier $m_\omega$ on all mortality rates, lognormal, median 1, $\sigma = 0.15$. Below 1 means annuitants live longer and payouts rise. This gives the scenario payouts $L_{\omega,t}$.
-- **Rates.** The cash rate is a straight line, $r_{\omega,t} = \max\!\big(r + u_\omega + v_\omega \tfrac{t-1}{T-1},\ 0\big)$, with $u_\omega, v_\omega \sim N(0, 1\%^2)$. The level shift $u_\omega$ moves the whole line up or down. The tilt $v_\omega$ is extra drift that builds to its full size by year $T$. Every path starts within about 1% of $r$ and fans out to about $\pm1.4\%$ by year 40. Rates only affect cash earnings and borrowing cost. Bond coupons are fixed and bonds are held to maturity.
+- **Rates.** The cash rate is a straight line, $r_{\omega,t} = \max\!\big(r + u_\omega + v_\omega \tfrac{t-1}{T-1},\ 0\big)$, with $u_\omega, v_\omega \sim N(0, 1\%^2)$. The level shift $u_\omega$ moves the whole line up or down. The tilt $v_\omega$ is extra drift that builds to its full size by year $T$. Every path starts within about 1% of $r$ and fans out to about $\pm1.4\%$ by year 40. 
 - **Borrowing.** Shortfalls are borrowed at the scenario rate plus $\kappa = 3\%$.
 
 
@@ -108,7 +108,7 @@ $$
 
 ## Results
 
-### What was chosen
+### Chosen
 
 | | deterministic | stochastic, $\iota = 3$ |
 | --- | --- | --- |
@@ -126,7 +126,7 @@ The capital cap binds in both. The stochastic LP shortens corporate duration and
 
 ### Comparison
 
-Graded on 1,000 fresh scenarios. A scenario's peak is the largest balance borrowed at any point in it (0 if none). Mean peak averages the peak over all 1,000 scenarios. 95% CVaR averages it over the worst 50. Assets are 110.3.
+Grade the LP and stochastic LP on 1,000 fresh scenarios. A scenario's peak is the largest balance borrowed at any point in it (0 if none). Mean peak averages the peak over all 1,000 scenarios. 95% CVaR averages it over the worst $5\% \times 1000 = 50$ scenarios. Assets are 110.3.
 
 | portfolio | net yield | scenarios with shortfall | mean peak | 95% CVaR of peak |
 | --- | --- | --- | --- | --- |
@@ -139,6 +139,9 @@ Graded on 1,000 fresh scenarios. A scenario's peak is the largest balance borrow
 | $\iota = 1$ | 5.45% | 7.5% | 0.10 | 1.79 |
 | $\iota = 3$ | 5.44% | 2.0% | 0.02 | 0.36 |
 
-Planning on expected payouts runs short in 55% of scenarios, and the worst 5% average a peak borrowing of 17.08. At $\iota = 3$ the stochastic LP cuts that to 2.0% of scenarios and a CVaR of 0.36, for about 6 bps of yield (5.50% to 5.44%). Yield falls smoothly as $\iota$ rises. At $\iota = 0$ borrowing is nearly free, so the model ignores shortfalls and does worse than the deterministic LP.
+Planning on expected payouts runs short in 55% of scenarios, and the worst 5% average a peak borrowing of 17.08. At $\iota = 3$ the stochastic LP cuts that to 2.0% of scenarios and a CVaR of 0.36, for about 6 bps of yield (5.50% to 5.44%). Yield falls smoothly as $\iota$ rises. At $\iota = 0$ borrowing is nearly free, so the model ignores shortfalls and does worse than the deterministic LP. 
 
 ![Net yield against shortfall, by iota](figures/frontier.png)
+
+Moving from $\iota = 0$ to $\iota = 3$ costs 7 bps of yield (5.51% to 5.44%) and cuts the 95% CVaR of peak borrowing by 23.03 (23.39 to 0.36). This is a bit too good to be true, any fund manager would take this tradeoff. This points to a poorly tuned exercise, but the formulation is sound. 
+
